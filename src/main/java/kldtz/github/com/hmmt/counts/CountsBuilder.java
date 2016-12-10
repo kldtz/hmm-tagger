@@ -1,8 +1,11 @@
 package kldtz.github.com.hmmt.counts;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -18,7 +21,8 @@ public class CountsBuilder {
 	private int maxSuffixLength;
 	private SuffixCountsType suffixCountsType;
 	private int maxWordFrequency;
-	
+	private BitSet testInstances;
+
 	public CountsBuilder(String corpusPath, CorpusFormat corpusFormat) {
 		this.corpusPath = corpusPath;
 		this.corpusFormat = corpusFormat;
@@ -26,6 +30,21 @@ public class CountsBuilder {
 		maxSuffixLength = 4;
 		suffixCountsType = SuffixCountsType.HASH;
 		maxWordFrequency = 10;
+		testInstances = null;
+	}
+
+	// for evaluation purposes
+	public CountsBuilder(Path corpusFilePath, CorpusFormat corpusFormat, BitSet isTestInstance) {
+		if (Files.isDirectory(corpusFilePath)) {
+			throw new IllegalArgumentException("Corpus must be provided in one file");
+		}
+		this.corpusPath = corpusFilePath.toString();
+		this.corpusFormat = corpusFormat;
+		maxNgramSize = 3;
+		maxSuffixLength = 4;
+		suffixCountsType = SuffixCountsType.HASH;
+		maxWordFrequency = 10;
+		this.testInstances = isTestInstance;
 	}
 
 	public CountsBuilder maxNgramSize(int maxNgramSize) {
@@ -42,18 +61,19 @@ public class CountsBuilder {
 		this.suffixCountsType = suffixCountsType;
 		return this;
 	}
-	
+
 	public CountsBuilder maxWordFrequencyForSuffixCounts(int maxWordFrequency) {
 		this.maxWordFrequency = maxWordFrequency;
 		return this;
 	}
-	
+
 	public Counts build() {
-		WordCounts wordCounts = collectWordLevelCounts();
+		WordCounts wordCounts = testInstances == null ? collectWordLevelCounts()
+				: collectSelectedWordLevelCountsInFile();
 		SuffixCounts suffixCounts = collectSuffixLevelCounts(wordCounts);
 		return new Counts(wordCounts, suffixCounts);
 	}
-	
+
 	private WordCounts collectWordLevelCounts() {
 		Queue<File> queue = new LinkedList<>();
 		queue.offer(new File(corpusPath));
@@ -68,7 +88,22 @@ public class CountsBuilder {
 		}
 		return wordCounts;
 	}
-	
+
+	private WordCounts collectSelectedWordLevelCountsInFile() {
+		WordCounts wordCounts = new HashedWordCounts(maxNgramSize);
+		CorpusFileReader corpusReader = corpusFormat.createCorpusFileReader(new File(corpusPath));
+		int sentenceIndex = 0;
+		for (List<WordTagTuple> sentence : corpusReader) {
+			if (!testInstances.get(sentenceIndex)) {
+				List<WordTagTuple> input = prepareInput(sentence, wordCounts.getStartTag(), wordCounts.getEndTag());
+				countSentence(wordCounts, input);
+			}
+			sentenceIndex++;
+		}
+		corpusReader.close();
+		return wordCounts;
+	}
+
 	private void collectWordLevelCountsInFile(WordCounts wordCounts, File file) {
 		CorpusFileReader corpusReader = corpusFormat.createCorpusFileReader(file);
 		for (List<WordTagTuple> sentence : corpusReader) {
