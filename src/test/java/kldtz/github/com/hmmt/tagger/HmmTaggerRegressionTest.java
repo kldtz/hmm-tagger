@@ -97,6 +97,7 @@ public class HmmTaggerRegressionTest {
 			List<String> actualTags = tagger.tag(sentence.words());
 			collectSentenceStats(sentence.tags(), actualTags);
 		}
+		corpusReader.close();
 	}
 
 	private void collectSentenceStats(List<String> expectedTags, List<String> actualTags) {
