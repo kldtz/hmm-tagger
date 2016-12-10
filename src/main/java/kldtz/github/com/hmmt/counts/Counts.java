@@ -28,6 +28,10 @@ public class Counts implements Serializable {
 	public Set<String> collectTagset() {
 		return wordCounts.collectTagset();
 	}
+	
+	public Set<String> getLexicon() {
+		return wordCounts.getLexikon();
+	}
 
 	public int getMaxNgramSize() {
 		return wordCounts.getMaxNgramSize();

@@ -10,7 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import kldtz.github.com.hmmt.container.WordTagTuple;
 import kldtz.github.com.hmmt.corpus.Capitalization;
+import kldtz.github.com.hmmt.corpus.CorpusFileReader;
+import kldtz.github.com.hmmt.corpus.CorpusFormat;
 
 public class Utils {
 	public static final char PADDING_CHAR = ' ';
@@ -77,5 +80,35 @@ public class Utils {
 		}
 		tagset.add(ERROR_TAG);
 		return tagset;
+	}
+	
+	public static int countSentencesInFile(Path corpusPath, CorpusFormat format) {
+		int numSentences = 0;
+		CorpusFileReader corpus = format.createCorpusFileReader(corpusPath.toFile());
+		for (List<WordTagTuple> sentence : corpus) {
+			numSentences++;
+		}
+		corpus.close();
+		return numSentences;
+	}
+	
+	public static Set<String> readTagset(Path corpusPath, CorpusFormat corpusFormat) {
+		CorpusFileReader corpus = corpusFormat.createCorpusFileReader(corpusPath.toFile());
+		Set<String> tagset = new HashSet<>();
+		for (List<WordTagTuple> sentence : corpus) {
+			for (WordTagTuple tuple : sentence) {
+				tagset.add(tuple.tag());
+			}
+		}
+		corpus.close();
+		return tagset;
+	}
+	
+	public static void writeTagset(Path outPath, Set<String> tagset) {
+		try {
+			Files.write(outPath, tagset);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 }
