@@ -73,7 +73,11 @@ public class EvaluationData {
 	public String getLine() {
 		StringBuilder sb = new StringBuilder();
 		for (String key : header) {
-			sb.append(data.get(key));
+			String field = data.get(key).replaceAll("\"", "\"\"");
+			field = field.replaceAll("'", "''");
+			sb.append('"');
+			sb.append(field);
+			sb.append('"');
 			sb.append(delimiter);
 		}
 		sb.setLength(sb.length() - 1);
