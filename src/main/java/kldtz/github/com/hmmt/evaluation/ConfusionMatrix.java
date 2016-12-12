@@ -1,6 +1,5 @@
 package kldtz.github.com.hmmt.evaluation;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,6 +29,10 @@ public class ConfusionMatrix {
 		stats = new HashMap<>();
 		tagsetSize = tagset.size();
 	}
+	
+	public void clearCache() {
+		stats = new HashMap<>();
+	}
 
 	public void increment(String expected, String actual) {
 		frequencies[mapping.getIndex(expected)][mapping.getIndex(actual)] += 1;
@@ -56,12 +59,8 @@ public class ConfusionMatrix {
 	}
 
 	public double macroAveragedPrecision() {
-		String key = "macroAveragePrecision";
-		if (!stats.containsKey(key)) {
-			stats.put(key, IntStream.range(0, tagsetSize).mapToDouble(this::precision).filter(Double::isFinite)
-					.average().getAsDouble());
-		}
-		return stats.get(key);
+		return IntStream.range(0, tagsetSize).mapToDouble(this::precision).filter(Double::isFinite)
+					.average().getAsDouble();
 	}
 
 	public List<Pair<String, Double>> precisionPerTag() {
@@ -86,12 +85,8 @@ public class ConfusionMatrix {
 	}
 
 	public double macroAveragedRecall() {
-		String key = "macroAverageRecall";
-		if (!stats.containsKey(key)) {
-			stats.put(key, IntStream.range(0, tagsetSize).mapToDouble(this::recall).filter(Double::isFinite).average()
-					.getAsDouble());
-		}
-		return stats.get(key);
+		return IntStream.range(0, tagsetSize).mapToDouble(this::recall).filter(Double::isFinite).average()
+					.getAsDouble();
 	}
 
 	public List<Pair<String, Double>> recallPerTag() {
@@ -149,60 +144,7 @@ public class ConfusionMatrix {
 	}
 
 	// Layout ------------------------------------------------
-
-	public String getSummaryStatistics() {
-		List<Pair<String, Double>> precisionPerTag = precisionPerTag();
-		List<Pair<String, Double>> recallPerTag = recallPerTag();
-		StringBuilder sb = new StringBuilder();
-		sb.append("Precision(Tag)").append("\t").append("Recall(Tag)").append("\n");
-		String formatString = "#.###";
-		int keyLength = columnSize[0] + 1;
-		int valueSize = formatString.length();
-		DecimalFormat df = new DecimalFormat(formatString);
-		for (int i = 0; i < Math.max(precisionPerTag.size(), recallPerTag.size()); i++) {
-			if (i < precisionPerTag.size()) {
-				sb.append(padLeft(precisionPerTag.get(i).getKey()));
-				sb.append(": ");
-				sb.append(padRight(df.format(precisionPerTag.get(i).getValue()), valueSize));
-			} else {
-				sb.append(padLeft("", keyLength)).append(padRight("", valueSize));
-			}
-			if (i < recallPerTag.size()) {
-				sb.append("\t");
-				sb.append(padLeft(recallPerTag.get(i).getKey()));
-				sb.append(": ");
-				sb.append(padRight(df.format(recallPerTag.get(i).getValue()), valueSize));
-				sb.append("\n");
-			}
-		}
-		String line = padRight("", columnSize[0] - 1, '-') + "--" + padRight("", valueSize, '-');
-		sb.append(line);
-		sb.append("\t");
-		sb.append(line);
-		return sb.toString();
-	}
-
-	private String padLeft(String value) {
-		int size = columnSize[0] - 1;
-		return padLeft(value, size);
-	}
 	
-	private String padLeft(String value, int size) {
-		return padLeft(value, size, ' ');
-	}
-
-	private String padLeft(String value, int size, char paddingChar) {
-		if (value.length() > size) {
-			throw new IllegalArgumentException("Value is bigger than given size!");
-		}
-		String paddedValue = "";
-		while (paddedValue.length() < size - value.length()) {
-			paddedValue += paddingChar;
-		}
-		paddedValue += value;
-		return paddedValue;
-	}
-
 	public String getConfusionMatrix() {
 		updateMinColumnSizes();
 		StringBuilder sb = new StringBuilder();
@@ -220,7 +162,7 @@ public class ConfusionMatrix {
 		}
 		return sb.toString();
 	}
-
+	
 	private void initializeColumnSize() {
 		String[] tagArray = mapping.getTagArray();
 		columnSize = new int[tagArray.length + 1];
@@ -235,7 +177,7 @@ public class ConfusionMatrix {
 		}
 		columnSize[0] = maxTagLength + 1;
 	}
-
+	
 	private void updateMinColumnSizes() {
 		for (int column = 1; column < columnSize.length; column++) {
 			int maxValueLength = computeMaxValueLength(column);
@@ -243,6 +185,23 @@ public class ConfusionMatrix {
 				columnSize[column] = maxValueLength + 1;
 			}
 		}
+	}
+
+	private String padLeft(String value) {
+		int size = columnSize[0] - 1;
+		return padLeft(value, size, ' ');
+	}
+	
+	private String padLeft(String value, int size, char paddingChar) {
+		if (value.length() > size) {
+			throw new IllegalArgumentException("Value is bigger than given size!");
+		}
+		String paddedValue = "";
+		while (paddedValue.length() < size - value.length()) {
+			paddedValue += paddingChar;
+		}
+		paddedValue += value;
+		return paddedValue;
 	}
 
 	private int computeMaxValueLength(int column) {
