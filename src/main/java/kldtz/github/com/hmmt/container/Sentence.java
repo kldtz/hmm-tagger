@@ -1,9 +1,11 @@
 package kldtz.github.com.hmmt.container;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-public class Sentence {
+public class Sentence implements Iterable<WordTagTuple> {
 	private List<String> words;
 	private List<String> tags;
 	
@@ -32,5 +34,33 @@ public class Sentence {
 	
 	public boolean isEmpty() {
 		return words.isEmpty();
+	}
+
+	@Override
+	public Iterator<WordTagTuple> iterator() {
+		return new SentenceIterator();
+	}
+	
+	private class SentenceIterator implements Iterator<WordTagTuple> {
+		int currentIndex;
+		
+		public SentenceIterator() {
+			currentIndex = 0;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return currentIndex < words.size();
+		}
+
+		@Override
+		public WordTagTuple next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException(getClass().getName() + " has no further element");
+			}
+			WordTagTuple tuple = new WordTagTuple(words.get(currentIndex), tags.get(currentIndex));
+			currentIndex++;
+			return tuple;
+		}
 	}
 }
