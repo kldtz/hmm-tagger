@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import kldtz.github.com.hmmt.container.Sentence;
 import kldtz.github.com.hmmt.container.WordTagTuple;
 import kldtz.github.com.hmmt.corpus.CorpusFileReader;
 import kldtz.github.com.hmmt.corpus.CorpusFormat;
@@ -93,7 +94,7 @@ public class CountsBuilder {
 		WordCounts wordCounts = new HashedWordCounts(maxNgramSize);
 		CorpusFileReader corpusReader = corpusFormat.createCorpusFileReader(new File(corpusPath));
 		int sentenceIndex = 0;
-		for (List<WordTagTuple> sentence : corpusReader) {
+		for (Sentence sentence : corpusReader) {
 			if (!testInstances.get(sentenceIndex)) {
 				List<WordTagTuple> input = prepareInput(sentence, wordCounts.getStartTag(), wordCounts.getEndTag());
 				countSentence(wordCounts, input);
@@ -106,20 +107,22 @@ public class CountsBuilder {
 
 	private void collectWordLevelCountsInFile(WordCounts wordCounts, File file) {
 		CorpusFileReader corpusReader = corpusFormat.createCorpusFileReader(file);
-		for (List<WordTagTuple> sentence : corpusReader) {
+		for (Sentence sentence : corpusReader) {
 			List<WordTagTuple> input = prepareInput(sentence, wordCounts.getStartTag(), wordCounts.getEndTag());
 			countSentence(wordCounts, input);
 		}
 		corpusReader.close();
 	}
 
-	private List<WordTagTuple> prepareInput(List<WordTagTuple> sentence, String startTag, String endTag) {
+	private List<WordTagTuple> prepareInput(Sentence sentence, String startTag, String endTag) {
 		List<WordTagTuple> input = new ArrayList<>();
 		WordTagTuple startTuple = new WordTagTuple(startTag, startTag);
 		for (int i = 0; i < maxNgramSize - 1; i++) {
 			input.add(startTuple);
 		}
-		input.addAll(sentence);
+		for (WordTagTuple wordTag : sentence) {
+			input.add(wordTag);
+		}
 		WordTagTuple endTuple = new WordTagTuple(endTag, endTag);
 		input.add(endTuple);
 		return input;

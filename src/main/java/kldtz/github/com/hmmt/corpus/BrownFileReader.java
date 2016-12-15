@@ -3,10 +3,9 @@ package kldtz.github.com.hmmt.corpus;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import kldtz.github.com.hmmt.container.WordTagTuple;
+import kldtz.github.com.hmmt.container.Sentence;
 
 public class BrownFileReader extends CorpusFileReader {
 
@@ -26,7 +25,7 @@ public class BrownFileReader extends CorpusFileReader {
 					return;
 				}
 				String[] tokens = line.split("\\s+");
-				sentence = new ArrayList<>(tokens.length);
+				sentence = new Sentence();
 				for (String token : tokens) {
 					String[] wordTag = token.split("_");
 					if (wordTag.length != 2) {
@@ -34,7 +33,7 @@ public class BrownFileReader extends CorpusFileReader {
 					} else if (wordTag[1].length() > 1 && wordTag[1].charAt(1) == '|') {
 						wordTag[1] = wordTag[1].substring(0, 1);
 					}
-					sentence.add(new WordTagTuple(wordTag[0], wordTag[1]));
+					sentence.addWordTagPair(wordTag[0], wordTag[1]);
 				}
 			}
 		} catch (IOException e) {

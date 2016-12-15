@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import kldtz.github.com.hmmt.container.Sentence;
+import kldtz.github.com.hmmt.corpus.CorpusFileReader;
 import kldtz.github.com.hmmt.corpus.CorpusFormat;
-import kldtz.github.com.hmmt.corpus.TestCorpusReader;
 import kldtz.github.com.hmmt.tagger.Tagger;
 import kldtz.github.com.hmmt.utils.Utils;
 
@@ -38,7 +38,7 @@ public class SplitEvaluator {
 		if (lexicon == null || tagger == null) {
 			throw new IllegalStateException("The SplitEvaluator needs a tagger and a lexicon");
 		}
-		TestCorpusReader corpusReader = corpusFormat.createTestCorpusReader(corpusPath.toFile());
+		CorpusFileReader corpusReader = corpusFormat.createCorpusFileReader(corpusPath.toFile());
 		int sentenceIndex = 0;
 		for (Sentence sentence : corpusReader) {
 			if (testInstances.get(sentenceIndex)) {

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import kldtz.github.com.hmmt.container.Sentence;
 import kldtz.github.com.hmmt.container.WordTagTuple;
 import kldtz.github.com.hmmt.corpus.Capitalization;
 import kldtz.github.com.hmmt.corpus.CorpusFileReader;
@@ -85,7 +86,7 @@ public class Utils {
 	public static int countSentencesInFile(Path corpusPath, CorpusFormat format) {
 		int numSentences = 0;
 		CorpusFileReader corpus = format.createCorpusFileReader(corpusPath.toFile());
-		for (List<WordTagTuple> sentence : corpus) {
+		for (Sentence sentence : corpus) {
 			numSentences++;
 		}
 		corpus.close();
@@ -95,7 +96,7 @@ public class Utils {
 	public static Set<String> readTagset(Path corpusPath, CorpusFormat corpusFormat) {
 		CorpusFileReader corpus = corpusFormat.createCorpusFileReader(corpusPath.toFile());
 		Set<String> tagset = new HashSet<>();
-		for (List<WordTagTuple> sentence : corpus) {
+		for (Sentence sentence : corpus) {
 			for (WordTagTuple tuple : sentence) {
 				tagset.add(tuple.tag());
 			}

@@ -11,8 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kldtz.github.com.hmmt.container.Sentence;
+import kldtz.github.com.hmmt.corpus.CorpusFileReader;
 import kldtz.github.com.hmmt.corpus.CorpusFormat;
-import kldtz.github.com.hmmt.corpus.TestCorpusReader;
 import kldtz.github.com.hmmt.counts.Counts;
 import kldtz.github.com.hmmt.counts.CountsBuilder;
 import kldtz.github.com.hmmt.counts.SuffixCountsType;
@@ -92,7 +92,7 @@ public class HmmTaggerRegressionTest {
 	}
 
 	private void collectTrainingCorpusStats(Tagger tagger) {
-		TestCorpusReader corpusReader = TEST_CORPUS_FORMAT.createTestCorpusReader(new File(TEST_CORPUS));
+		CorpusFileReader corpusReader = TEST_CORPUS_FORMAT.createCorpusFileReader(new File(TEST_CORPUS));
 		for (Sentence sentence : corpusReader) {
 			List<String> actualTags = tagger.tag(sentence.words());
 			collectSentenceStats(sentence.tags(), actualTags);
