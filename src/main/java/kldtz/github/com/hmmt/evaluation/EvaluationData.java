@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EvaluationData {
+	private static final String SPLIT_NUMBER = "splitNumber";
 	private static final String SENTENCE_LENGTH = "sentenceLength";
 	private static final String SENTENCE_INDEX = "sentenceIndex";
 	private static final String WORD_INDEX_IN_SENTENCE = "wordIndexInSentence";
@@ -12,7 +13,7 @@ public class EvaluationData {
 	private static final String EXPECTED_TAG = "expectedTag";
 	private static final String WORD = "word";
 	private static final String[] header = { WORD, EXPECTED_TAG, ACTUAL_TAG, IS_KNOWN_WORD, WORD_INDEX_IN_SENTENCE,
-			SENTENCE_INDEX, SENTENCE_LENGTH };
+			SENTENCE_INDEX, SENTENCE_LENGTH, SPLIT_NUMBER };
 	private static char delimiter = ',';
 
 	private Map<String, String> data;
@@ -53,6 +54,11 @@ public class EvaluationData {
 
 	public EvaluationData setSentenceLength(int sentenceLength) {
 		data.put(SENTENCE_LENGTH, Integer.toString(sentenceLength));
+		return this;
+	}
+	
+	public EvaluationData setSplitNumber(int splitNumber) {
+		data.put(SPLIT_NUMBER, Integer.toString(splitNumber));
 		return this;
 	}
 	

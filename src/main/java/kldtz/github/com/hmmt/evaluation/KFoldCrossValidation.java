@@ -52,7 +52,7 @@ public class KFoldCrossValidation {
 				Counts counts = new CountsBuilder(corpusPath, corpusFormat, testInstances).build();
 				splitEvaluator.setLexicon(counts.getLexicon());
 				splitEvaluator.setTagger(new TaggerBuilder(counts).build());
-				splitEvaluator.evaluateSplit(testInstances);
+				splitEvaluator.evaluateSplit(testInstances, fold);
 			}
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
@@ -63,7 +63,7 @@ public class KFoldCrossValidation {
 	public static void main(String[] args) {
 		Path corpusPath = Paths.get("data/private/tiger.conll");
 		KFoldCrossValidation mccv = new KFoldCrossValidation(corpusPath, CorpusFormat.CONLL);
-		Path output = Paths.get("data/private/10-Fold_Cross_Validation_Tiger.csv");
+		Path output = Paths.get("data/private/10-Fold_Cross_Validation_Tiger_n3.csv");
 		mccv.trainAndTagOnFolds(output, 10);
 	}
 }

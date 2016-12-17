@@ -34,7 +34,7 @@ public class SplitEvaluator {
 		this.tagger = tagger;
 	}
 
-	public void evaluateSplit(BitSet testInstances) throws IOException {
+	public void evaluateSplit(BitSet testInstances, int splitNumber) throws IOException {
 		if (lexicon == null || tagger == null) {
 			throw new IllegalStateException("The SplitEvaluator needs a tagger and a lexicon");
 		}
@@ -42,14 +42,14 @@ public class SplitEvaluator {
 		int sentenceIndex = 0;
 		for (Sentence sentence : corpusReader) {
 			if (testInstances.get(sentenceIndex)) {
-				evaluateSentence(sentence, sentenceIndex);
+				evaluateSentence(sentence, sentenceIndex, splitNumber);
 			}
 			sentenceIndex++;
 		}
 		corpusReader.close();
 	}
 
-	private void evaluateSentence(Sentence sentence, int sentenceIndex) throws IOException {
+	private void evaluateSentence(Sentence sentence, int sentenceIndex, int splitNumber) throws IOException {
 		List<String> words = sentence.words();
 		List<String> expectedTags = sentence.tags();
 		List<String> actualTags = tagger.tag(sentence.words());
@@ -61,7 +61,8 @@ public class SplitEvaluator {
 				.setIsKnownWord(lexicon.contains(words.get(j)))
 				.setSentenceIndex(sentenceIndex)
 				.setWordIndexInSentence(j)
-				.setSentenceLength(words.size());
+				.setSentenceLength(words.size())
+				.setSplitNumber(splitNumber);
 			writer.write(data.getLine());
 			writer.newLine();
 		}

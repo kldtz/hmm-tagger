@@ -57,7 +57,7 @@ public class MonteCarloCrossValidation {
 				Tagger tagger = new TaggerBuilder(counts).build();
 				splitEvaluator.setLexicon(lexicon);
 				splitEvaluator.setTagger(tagger);
-				splitEvaluator.evaluateSplit(testInstances);
+				splitEvaluator.evaluateSplit(testInstances, i);
 			}
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
