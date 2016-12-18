@@ -8,3 +8,4 @@ This software uses the following libraries distributed under the listed licenses
 * SLF4J, MIT License ([SLF4J_MIT_LICENSE.txt](SLF4J_MIT_LICENSE.txt))
 * Trove, GNU Lesser General Public License ([LGPL-3.0.txt](LGPL-3.0.txt))
 * Apache Commons, Apache License 2.0 ([APACHE_LICENSE-2.0.txt](APACHE_LICENSE-2.0.txt))
+* pandas, BSD License ([PANDAS_BSD_LICENSE.txt](PANDAS_BSD_LICENSE.txt))
