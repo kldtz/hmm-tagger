@@ -1,0 +1,5 @@
+                      mean       std
+accuracy-total    0.968602  0.003032
+accuracy-known    0.976547  0.001752
+accuracy-unknown  0.874577  0.010037
+fraction-unknown  0.077444  0.007551
