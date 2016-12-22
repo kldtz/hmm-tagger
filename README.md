@@ -84,7 +84,7 @@ sentence    NN
 
 ## Evaluation
 
-I evaluated the tagger on the German TIGER corpus using 10-fold cross validation: The corpus was partitioned into 10 parts with an equal number of sentences (5047). Each subsample was used to validate the model trained on the remaining 9 subsamples. The following table reports mean and standard deviation (in parantheses) of the per-tag accuracy across all ten folds.
+I evaluated the tagger on the German TIGER corpus ([Albert et al. (2003)](#albert-et-al-2003), [Brants et al. (2003)](#brants-et-al-2004)) using 10-fold cross validation: The corpus was partitioned into 10 parts with an equal number of sentences (5047). Each subsample was used to validate the model trained on the remaining 9 subsamples. The following table reports mean and standard deviation (in parantheses) of the per-tag accuracy across all ten folds.
 
 | Ngram size| Mean total accuracy| Mean acc. for known words| Mean acc. for unknown words| 
 |----------:|-------------------:|-------------------------:|---------------------------:|
@@ -95,7 +95,9 @@ I evaluated the tagger on the German TIGER corpus using 10-fold cross validation
 ## References
 
 * <a name="brants-2000"></a>Brants, T. (2000). TnT: a statistical part-of-speech tagger. In Proceedings of the 6th Conference on Applied Natural Language Processing (pp. 224-231). Association for Computational Linguistics.
+* <a name="brants-et-al-2004"></a>Brants, Sabine, Stefanie Dipper, Peter Eisenberg, Silvia Hansen, Esther König, Wolfgang Lezius, Christian Rohrer, George Smith, and Hans Uszkoreit (2004). TIGER: Linguistic Interpretation of a German Corpus. Journal of Language and Computation, 2004 (2), 597-620.
 * <a name="samuelsson-1993"></a>Samuelsson, C. (1993). Morphological tagging based entirely on Bayesian inference. In Proceedings of the 9th Nordic Conference on Computational Linguistics.
+* <a name="albert-et-al-2003"></a>Albert, S., Anderssen, J., Bader, R., Becker, S., Bracht, T., Brants, S., ... , Uszkoreit, H. (2003). TIGER Annotationsschema. Manuscript. Universität des Saarlands, Universität Stuttgart, Universität Potsdam. July 2003.
 
 ## License
 
