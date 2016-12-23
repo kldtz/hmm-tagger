@@ -84,13 +84,14 @@ sentence    NN
 
 ## Evaluation
 
-I evaluated the tagger on the German TIGER corpus ([Albert et al. (2003)](#albert-et-al-2003), [Brants et al. (2003)](#brants-et-al-2004)) using 10-fold cross validation: The corpus was partitioned into 10 parts with an equal number of sentences (5047). Each subsample was used to validate the model trained on the remaining 9 subsamples. The following table reports mean and standard deviation (in parantheses) of the per-tag accuracy across all ten folds.
+I evaluated the tagger on the German TIGER corpus ([Albert et al. (2003)](#albert-et-al-2003), [Brants et al. (2004)](#brants-et-al-2004)) using 10-fold cross validation: The corpus was partitioned into 10 parts with an equal number of sentences (5047). Each subsample was used to validate the model trained on the remaining 9 subsamples. The following table reports mean and standard deviation (in parantheses) of the per-tag accuracy across all ten folds.
 
 | Ngram size| Mean total accuracy| Mean acc. for known words| Mean acc. for unknown words| 
 |----------:|-------------------:|-------------------------:|---------------------------:|
 |3|96.86 (0.30)|97.65 (0.18)|87.46 (1.00)|
 |4|96.94 (0.31)|97.71 (0.18)|87.92 (1.12)|
 
+(All values are percentages.)
 
 ## References
 
