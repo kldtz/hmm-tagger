@@ -2,24 +2,24 @@ package kldtz.github.com.hmmt.counts;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import kldtz.github.com.hmmt.container.SctTriple;
 import kldtz.github.com.hmmt.corpus.Capitalization;
 import kldtz.github.com.hmmt.utils.Utils;
 
 public class HashedSuffixCounts implements SuffixCounts, Serializable {	
 	private static final long serialVersionUID = 1L;
-	private Map<SctTriple, Integer> suffixCounts;
+	private TObjectIntMap<SctTriple> suffixCounts;
 	private int maxSuffixLength;
 	private Set<String> tagset;
 	
 	public HashedSuffixCounts(Set<String> tagset, int maxSuffixLength) {
-		suffixCounts = new HashMap<>();
+		suffixCounts = new TObjectIntHashMap<>(1000, 0.5f, 0);
 		this.maxSuffixLength = maxSuffixLength;
 		this.tagset = tagset;
 	}
@@ -30,10 +30,7 @@ public class HashedSuffixCounts implements SuffixCounts, Serializable {
 		String paddedWord = Utils.padWord(word, maxSuffixLength);
 		for (int i = 0; i <= maxSuffixLength; i++) {
 			SctTriple sct = new SctTriple(paddedWord.substring(paddedWord.length() - i), c, tag);
-			if (!suffixCounts.containsKey(sct)) {
-				suffixCounts.put(sct, 0);
-			}
-			suffixCounts.put(sct, suffixCounts.get(sct) + frequency);
+			suffixCounts.adjustOrPutValue(sct, frequency, frequency);
 		}		
 	}
 
@@ -44,11 +41,7 @@ public class HashedSuffixCounts implements SuffixCounts, Serializable {
 		String paddedWord = Utils.padWord(word, maxSuffixLength);
 		for (int i = 0; i <= maxSuffixLength; i++) {
 			SctTriple sct = new SctTriple(paddedWord.substring(paddedWord.length() - i), c, tag);
-			Integer count = suffixCounts.get(sct);
-			if (count == null) {
-				count = 0;
-			}
-			counts.add(count);
+			counts.add(suffixCounts.get(sct));
 		}
 		return counts;
 	}
