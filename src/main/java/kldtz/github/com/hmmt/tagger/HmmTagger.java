@@ -3,6 +3,7 @@ package kldtz.github.com.hmmt.tagger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import kldtz.github.com.hmmt.probabilities.EmissionProbabilities;
 import kldtz.github.com.hmmt.probabilities.TransitionProbabilities;
@@ -13,9 +14,6 @@ public class HmmTagger implements Tagger {
 	private States states;
 	private int maxNgramSize;
 
-	private List<ViterbiCell> previousViterbiCells;
-	private List<ViterbiCell> currentViterbiCells;
-	
 	HmmTagger(States states, TransitionProbabilities transitionProbabilities,
 			EmissionProbabilities emissionProbabilities, int maxNgramSize) {
 		this.states = states;
@@ -25,27 +23,28 @@ public class HmmTagger implements Tagger {
 	}
 
 	public List<String> tag(List<String> tokens) {
-		initialize();
-		recurse(tokens);
-		terminate();
-		return backtrace();
+		List<ViterbiCell> previousViterbiCells = initialize();
+		previousViterbiCells = recurse(tokens, previousViterbiCells);
+		Optional<ViterbiCell> finalCell = terminate(previousViterbiCells);
+		return backtrace(finalCell);
 	}
 
-	private void initialize() {
-		previousViterbiCells = new ArrayList<>();
+	private List<ViterbiCell> initialize() {
+		List<ViterbiCell> previousViterbiCells = new ArrayList<>();
 		ViterbiCell previousCell = null;
 		for (int i = 0; i < maxNgramSize - 1; i++) {
 			ViterbiCell currentCell = new ViterbiCell(0, states.getStartState(), previousCell);
 			previousCell = currentCell;
 		}
 		previousViterbiCells.add(previousCell);
-		currentViterbiCells = new ArrayList<>();
+		return previousViterbiCells;
 	}
 
-	private void recurse(List<String> observations) {
+	private  List<ViterbiCell> recurse(List<String> observations, List<ViterbiCell> previousViterbiCells) {
+		List<ViterbiCell> currentViterbiCells = new ArrayList<>();
 		for (String observation : observations) {
 			for (String state : states.getPossibleStates(observation)) {
-				ViterbiCell currentCell = computeViterbiCell(observation, state);
+				ViterbiCell currentCell = computeViterbiCell(observation, state, previousViterbiCells);
 				if (currentCell != null) {
 					currentViterbiCells.add(currentCell);
 				}
@@ -53,21 +52,22 @@ public class HmmTagger implements Tagger {
 			previousViterbiCells = currentViterbiCells;
 			currentViterbiCells = new ArrayList<>();
 		}
+		return previousViterbiCells;
 	}
 
-	private ViterbiCell computeViterbiCell(String observation, String state) {
+	private ViterbiCell computeViterbiCell(String observation, String state, List<ViterbiCell> previousViterbiCells) {
 		double emissionProbability = emission.getLogProbability(observation, state);
 		if (!Double.isFinite(emissionProbability)) {
 			return null;
 		}
-		ViterbiCell maxCell = computeMaxCell(state, emissionProbability);
+		ViterbiCell maxCell = computeMaxCell(state, emissionProbability, previousViterbiCells);
 		if (!Double.isFinite(maxCell.getValue())) {
 			return null;
 		}
 		return maxCell;
 	}
 
-	private ViterbiCell computeMaxCell(String state, double emissionProbability) {
+	private ViterbiCell computeMaxCell(String state, double emissionProbability,  List<ViterbiCell> previousViterbiCells) {
 		ViterbiCell maxCell = new ViterbiCell(Double.NEGATIVE_INFINITY, state, null);
 		for (ViterbiCell previousCell : previousViterbiCells) {
 			double value = computeViterbiValue(previousCell, state, emissionProbability);
@@ -90,27 +90,24 @@ public class HmmTagger implements Tagger {
 		return previousCell.getValue() + transition.getLogProbability(ngram) + emissionProbability;
 	}
 
-	private void terminate() {
-		ViterbiCell finalCell = computeMaxCell(states.getEndState(), 0);
+	private Optional<ViterbiCell> terminate(List<ViterbiCell> previousViterbiCells) {
+		ViterbiCell finalCell = computeMaxCell(states.getEndState(), 0, previousViterbiCells);
 		if (Double.isFinite(finalCell.getValue())) {
-			currentViterbiCells.add(finalCell);
+			return Optional.of(finalCell);
 		}
+		return Optional.empty();
 	}
 
-	private List<String> backtrace() {
+	private List<String> backtrace(Optional<ViterbiCell> finalCell) {
 		LinkedList<String> tags = new LinkedList<>();
-		if (!hasTerminatedSuccessfully()) {
+		if (!finalCell.isPresent()) {
 			return tags;
 		}
-		ViterbiCell currentCell = currentViterbiCells.get(0).getPreviousCell();
+		ViterbiCell currentCell = finalCell.get().getPreviousCell();
 		do {
 			tags.add(0, currentCell.getState());
 			currentCell = currentCell.getPreviousCell();
 		} while (!currentCell.getState().equals(states.getStartState()));
 		return tags;
-	}
-	
-	private boolean hasTerminatedSuccessfully() {
-		return !currentViterbiCells.isEmpty();
 	}
 }
