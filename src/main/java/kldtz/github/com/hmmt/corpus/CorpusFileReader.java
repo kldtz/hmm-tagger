@@ -15,29 +15,31 @@ import org.slf4j.LoggerFactory;
 
 import kldtz.github.com.hmmt.container.Sentence;
 
-public abstract class CorpusFileReader implements Iterable<Sentence> {
+public abstract class CorpusFileReader implements Iterable<Sentence>, AutoCloseable {
 	static final Logger logger = LoggerFactory.getLogger(CorpusFileReader.class);
 
 	protected File corpusFile;
 	protected FileReader fileReader;
 	protected BufferedReader reader;
-	protected Sentence sentence;
 
 	public CorpusFileReader(File corpusFile) {
 		this.corpusFile = corpusFile;
 	}
 
-	abstract void readSentence();
+	abstract Sentence readSentence() throws IOException;
 
 	@Override
 	public Iterator<Sentence> iterator() {
-		return new TestCorpusIterator();
+		try {
+			return new TestCorpusIterator();
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 	
 	public void close() {
 		close(reader);
 		close(fileReader);
-		sentence = null;
 	}
 	
 	private void close(Reader reader) {
@@ -51,12 +53,14 @@ public abstract class CorpusFileReader implements Iterable<Sentence> {
 	}
 
 	private class TestCorpusIterator implements Iterator<Sentence> {
+		
+		private Sentence sentence;
 
-		public TestCorpusIterator() {
+		public TestCorpusIterator() throws IOException {
 			try {
 				fileReader = new FileReader(corpusFile);
 				reader = new BufferedReader(fileReader);
-				readSentence();
+				sentence = readSentence();
 			} catch (FileNotFoundException e) {
 				String message = String.format("Corpus file %s not found", corpusFile.getAbsolutePath());
 				throw new UncheckedIOException(message, e);
@@ -72,7 +76,11 @@ public abstract class CorpusFileReader implements Iterable<Sentence> {
 		public Sentence next() {
 			Sentence currentSentence = sentence;
 			if (hasNext()) {
-				readSentence();
+				try {
+					sentence = readSentence();
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
 				return currentSentence;
 			}
 			throw new NoSuchElementException(getClass().getName() + " has no further element");
