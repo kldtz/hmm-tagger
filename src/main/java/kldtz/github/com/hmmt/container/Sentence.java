@@ -63,4 +63,9 @@ public class Sentence implements Iterable<WordTagTuple> {
 			return tuple;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Sentence [words=" + words + ", tags=" + tags + "]";
+	}
 }

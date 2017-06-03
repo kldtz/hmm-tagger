@@ -14,6 +14,12 @@ public enum CorpusFormat {
 		public CorpusFileReader createCorpusFileReader(File corpusFile) {
 			return new BrownFileReader(corpusFile);
 		}
+	},
+	GERMEVAL {
+		@Override
+		public CorpusFileReader createCorpusFileReader(File corpusFile) {
+			return new GermEvalReader(corpusFile);
+		}
 	};
 	
 	public abstract CorpusFileReader createCorpusFileReader(File corpusFile);

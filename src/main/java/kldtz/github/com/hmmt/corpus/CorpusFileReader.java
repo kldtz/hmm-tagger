@@ -37,6 +37,7 @@ public abstract class CorpusFileReader implements Iterable<Sentence>, AutoClosea
 		}
 	}
 	
+	@Override
 	public void close() {
 		close(reader);
 		close(fileReader);
