@@ -24,7 +24,7 @@ public class EntityRecognition {
 	}
 
 	private static void tagAllSentences(Path trainSet, Path evalSet, Path results) throws IOException {
-		Counts counts = new CountsBuilder(trainSet.toString(), CorpusFormat.CONLL).maxWordFrequencyForSuffixCounts(10).maxNgramSize(4).build();
+		Counts counts = new CountsBuilder(trainSet.toString(), CorpusFormat.CONLL).maxNgramSize(4).build();
 		Tagger tagger = new TaggerBuilder(counts).build();
 		try (FileWriter fw = new FileWriter(results.toFile()); BufferedWriter bw = new BufferedWriter(fw);) {
 			bw.write(EvaluationData.getHeader());

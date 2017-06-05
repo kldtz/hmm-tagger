@@ -93,8 +93,21 @@ I evaluated the tagger on the German TIGER corpus ([Albert et al. (2003)](#alber
 
 (All values are percentages.)
 
+## Named-Entity Recognition
+
+The tagger was developed with part-of-speech tagging in mind, however, I was interested in how well it would do on the task of named-entity recognition (without any extension or parameter tweaking). I trained a 4-gram model on the outer spans of the *GermEval 2014 NER* training set ([Benikova et al., 2014](#benikova-et-al-2014)), where I added POS tags to all tokens that are not part of a named entity using the [Mate tagger](https://code.google.com/archive/p/mate-tools/).
+
+An exact-match evaluation on the outer spans of the development set yielded the following results:
+
+| Label | Precision | Recall | F1 |
+|------:|----------:|-------:|---:|
+| LOC | 0.683 | 0.672 | 0.677 |
+| ORG | 0.492 | 0.488 | 0.490 |
+| PER | 0.648 | 0.616 | 0.631 |
+
 ## References
 
+* <a name="benikova-et-al-2014"></a> Benikova, D., Biemann, C., & Reznicek, M. (2014, May). NoSta-D Named Entity Annotation for German: Guidelines and Dataset. In LREC (pp. 2524-2531).
 * <a name="brants-2000"></a>Brants, T. (2000). TnT: a statistical part-of-speech tagger. In Proceedings of the 6th Conference on Applied Natural Language Processing (pp. 224-231). Association for Computational Linguistics.
 * <a name="brants-et-al-2004"></a>Brants, Sabine, Stefanie Dipper, Peter Eisenberg, Silvia Hansen, Esther König, Wolfgang Lezius, Christian Rohrer, George Smith, and Hans Uszkoreit (2004). TIGER: Linguistic Interpretation of a German Corpus. Journal of Language and Computation, 2004 (2), 597-620.
 * <a name="samuelsson-1993"></a>Samuelsson, C. (1993). Morphological tagging based entirely on Bayesian inference. In Proceedings of the 9th Nordic Conference on Computational Linguistics.
